@@ -24,15 +24,18 @@ import * as log4js from "log4js";
 
 log4js.configure({
   appenders: {
+    dev: { type: "file", filename: "log/dev.log" },
     flashloan: { type: "file", filename: "log/flashloan.log" },
     error: { type: "file", filename: "log/error.log" },
   },
   categories: {
+    develop: { appenders: ["dev"], level: "debug" },
     default: { appenders: ["flashloan"], level: "info" },
     error: { appenders: ["error"], level: "warn" },
   },
 });
 
+const devLogger = log4js.getLogger("develop");
 const logger = log4js.getLogger("flashloan");
 const errReport = log4js.getLogger("error");
 
@@ -88,8 +91,14 @@ export const main = async () => {
 
           renderTables(p, pp);
 
+          devLogger.debug(
+            `index.main: [${baseToken.symbol}] -> [${tradingToken.symbol}], isProfitable:${isProfitable};`
+          );
           if (isProfitable && !isFlashLoaning) {
             if (firstProtocols && secondProtocols) {
+              devLogger.debug(
+                `index.main: [${baseToken.symbol}] -> [${tradingToken.symbol}], will check for isOpportunity;`
+              );
               const firstRoutes = createRoutes(firstProtocols);
               const secondRoutes = createRoutes(secondProtocols);
 
@@ -114,6 +123,12 @@ export const main = async () => {
               const isOpportunity = bnLoanAmount
                 .add(getBigNumber(diffAmount, baseToken.decimals))
                 .lt(bnExpectedAmountOut);
+              let bnLoanAmountAddDiff = bnLoanAmount.add(
+                getBigNumber(diffAmount, baseToken.decimals)
+              );
+              devLogger.debug(
+                `__isOpportunity:${isOpportunity}; bnLoanAmountAddDiff:${bnLoanAmountAddDiff}; bnExpectedAmountOut:${bnExpectedAmountOut};`
+              );
 
               if (isOpportunity) {
                 isFlashLoaning = true;
