@@ -4,6 +4,9 @@ import { flashloanAddress, loanAmount, gasLimit, gasPrice } from "./config";
 import { IToken, dodoV2Pool } from "./constants/addresses";
 import { IFlashloanRoute, IParams } from "./interfaces/main";
 import { getBigNumber } from "./utils/index";
+import * as log4js from "log4js";
+
+const devLogger = log4js.getLogger("develop");
 
 const maticProvider = new ethers.providers.JsonRpcProvider(
   process.env.ALCHEMY_POLYGON_RPC_URL
@@ -52,6 +55,7 @@ export const flashloan = async (
     secondRoutes: secondRoutes,
   };
 
+  devLogger.debug(`flashloan.flashloan: about to flashloan...`);
   return Flashloan.connect(signer).dodoFlashLoan(params, {
     gasLimit: gasLimit,
     gasPrice: ethers.utils.parseUnits(`${gasPrice}`, "gwei"),

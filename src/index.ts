@@ -40,6 +40,8 @@ const logger = log4js.getLogger("flashloan");
 const errReport = log4js.getLogger("error");
 
 export const main = async () => {
+  devLogger.debug(`index.main: v1.2;`);
+
   console.clear();
 
   let isFlashLoaning = false;
@@ -150,12 +152,13 @@ export const main = async () => {
                 const startTime = Date.now();
 
                 try {
+                  devLogger.debug(`index.main: about to flashloan`);
                   const tx = await flashloan(
                     baseToken,
                     firstRoutes,
                     secondRoutes
                   );
-
+                  devLogger.debug(`index.main: done flashloan`);
                   pp.addRow({
                     baseToken: baseToken.symbol.padEnd(6),
                     tradingToken: tradingToken.symbol.padEnd(6),
