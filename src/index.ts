@@ -40,7 +40,7 @@ const logger = log4js.getLogger("flashloan");
 const errReport = log4js.getLogger("error");
 
 export const main = async () => {
-  devLogger.debug(`index.main: v1.2;`);
+  devLogger.debug(`index.main: v1.3;`);
 
   console.clear();
 
@@ -129,7 +129,7 @@ export const main = async () => {
                 getBigNumber(diffAmount, baseToken.decimals)
               );
               devLogger.debug(
-                `__isOpportunity:${isOpportunity}; bnLoanAmountAddDiff:${bnLoanAmountAddDiff}; bnExpectedAmountOut:${bnExpectedAmountOut};`
+                `index.main: isOpportunity:${isOpportunity} for [${baseToken.symbol}] -> [${tradingToken.symbol}]; bnExpectedAmountOut:${bnExpectedAmountOut};`
               );
 
               if (isOpportunity) {
@@ -152,13 +152,17 @@ export const main = async () => {
                 const startTime = Date.now();
 
                 try {
-                  devLogger.debug(`index.main: about to flashloan`);
+                  devLogger.debug(
+                    `index.main: about to flashloan for [${baseToken.symbol}] -> [${tradingToken.symbol}]`
+                  );
                   const tx = await flashloan(
                     baseToken,
                     firstRoutes,
                     secondRoutes
                   );
-                  devLogger.debug(`index.main: done flashloan`);
+                  devLogger.debug(
+                    `index.main: done flashloan for [${baseToken.symbol}] -> [${tradingToken.symbol}]; tx:${tx.hash};`
+                  );
                   pp.addRow({
                     baseToken: baseToken.symbol.padEnd(6),
                     tradingToken: tradingToken.symbol.padEnd(6),
