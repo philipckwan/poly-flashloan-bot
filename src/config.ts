@@ -42,7 +42,7 @@ export const tradingTokens = [
  * if you have deployed your own contract, you can use it instead of the default one
  */
 export const flashloanAddress: string =
-  "0x33d8d437796bd43bdccc6740c585f4a15d1070b7";
+  "0x190baba3d2ab42f7a7a015876a260b4bd1a77ce8";
 
 /**
  * The bot can trade on UniswapV2 fork dexes(ex. SushiSwap) and UniswapV3
@@ -53,7 +53,7 @@ export const protocols =
   "POLYGON_SUSHISWAP,POLYGON_QUICKSWAP,POLYGON_APESWAP,POLYGON_JETSWAP,POLYGON_WAULTSWAP,POLYGON_UNISWAP_V3";
 
 export const gasLimit = 15000000;
-export const gasPrice = 100; // gwei
+export const gasPrice = 150; // gwei
 
 export const routeParts = [
   [10000],
