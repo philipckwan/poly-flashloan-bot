@@ -22,25 +22,47 @@ import { initPriceTable, renderTables } from "./consoleUI";
 import { createRoutes } from "./price/1inch/route";
 import * as log4js from "log4js";
 
-log4js.configure({
-  appenders: {
-    dev: { type: "file", filename: "log/dev.log" },
-    flashloan: { type: "file", filename: "log/flashloan.log" },
-    error: { type: "file", filename: "log/error.log" },
-  },
-  categories: {
-    develop: { appenders: ["dev"], level: "debug" },
-    default: { appenders: ["flashloan"], level: "info" },
-    error: { appenders: ["error"], level: "warn" },
-  },
-});
-
 const devLogger = log4js.getLogger("develop");
 const logger = log4js.getLogger("flashloan");
 const errReport = log4js.getLogger("error");
 
+const init = () => {
+  let devLoggerLevel = process.env.DEV_LOGGER_LEVEL
+    ? process.env.DEV_LOGGER_LEVEL
+    : "debug";
+  let loggerFilepath = process.env.LOGGER_FILEPATH
+    ? process.env.LOGGER_FILEPATH
+    : "log/";
+  let loggerFilePrefix = process.env.LOGGER_FILE_PREFIX
+    ? process.env.LOGGER_FILE_PREFIX
+    : "";
+
+  log4js.configure({
+    appenders: {
+      dev: {
+        type: "file",
+        filename: `${loggerFilepath}${loggerFilePrefix}dev.log`,
+      },
+      flashloan: {
+        type: "file",
+        filename: `${loggerFilepath}${loggerFilePrefix}flashloan.log`,
+      },
+      error: {
+        type: "file",
+        filename: `${loggerFilepath}${loggerFilePrefix}error.log`,
+      },
+    },
+    categories: {
+      develop: { appenders: ["dev"], level: devLoggerLevel },
+      default: { appenders: ["flashloan"], level: "info" },
+      error: { appenders: ["error"], level: "warn" },
+    },
+  });
+};
+
 export const main = async () => {
-  devLogger.debug(`index.main: v1.3;`);
+  devLogger.debug(`poly-flashloan-bot.index.main: v1.4;`);
+  init();
 
   console.clear();
 
