@@ -61,8 +61,8 @@ const init = () => {
 };
 
 export const main = async () => {
-  devLogger.debug(`poly-flashloan-bot.index.main: v1.4;`);
   init();
+  devLogger.debug(`poly-flashloan-bot.index.main: v1.4;`);
 
   console.clear();
 
