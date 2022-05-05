@@ -64,8 +64,9 @@ const init = () => {
 export const main = async () => {
   init();
   devLogger.debug(
-    `poly-flashloan-bot.index.main: v1.5; process.env.LOGGER_FILE_PREFIX:${process.env.LOGGER_FILE_PREFIX};`
+    `poly-flashloan-bot.index.main: v1.6; process.env.LOGGER_FILE_PREFIX:${process.env.LOGGER_FILE_PREFIX};`
   );
+  devLogger.debug(`__gasPrice:${gasPrice};`);
 
   console.clear();
 
