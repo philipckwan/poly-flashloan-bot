@@ -1,5 +1,6 @@
 import { config as dotEnvConfig } from "dotenv";
-dotEnvConfig();
+let argEnv = process.argv[2] ? process.argv[2] : "";
+dotEnvConfig({ path: `${argEnv}.env` });
 import { checkArbitrage } from "./price/1inch";
 import {
   baseTokens,
@@ -62,7 +63,9 @@ const init = () => {
 
 export const main = async () => {
   init();
-  devLogger.debug(`poly-flashloan-bot.index.main: v1.4;`);
+  devLogger.debug(
+    `poly-flashloan-bot.index.main: v1.5; process.env.LOGGER_FILE_PREFIX:${process.env.LOGGER_FILE_PREFIX};`
+  );
 
   console.clear();
 

@@ -1,6 +1,4 @@
-import { config as dotEnvConfig } from "dotenv";
 import { BigNumber, ethers } from "ethers";
-dotEnvConfig();
 import * as DODOV2Json from "../../abis/IDODOV2.json";
 import { flashloanAddress } from "../../config";
 import { findToken, getBigNumber } from "../../utils";

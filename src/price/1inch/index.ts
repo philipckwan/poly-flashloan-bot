@@ -1,5 +1,3 @@
-import { config as dotEnvConfig } from "dotenv";
-dotEnvConfig();
 import { ethers } from "ethers";
 import { chainId, diffAmount, loanAmount } from "../../config";
 import { IRoute } from "../../interfaces/main";
