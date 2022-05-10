@@ -1,10 +1,17 @@
 import { ethers } from "ethers";
 import * as FlashloanJson from "./abis/Flashloan.json";
-import { flashloanAddress, loanAmount, gasLimit, gasPrice } from "./config";
+import {
+  flashloanAddress,
+  loanAmount,
+  gasLimit,
+  gasPrice,
+  apiGetGasPrice,
+} from "./config";
 import { IToken, dodoV2Pool } from "./constants/addresses";
 import { IFlashloanRoute, IParams } from "./interfaces/main";
 import { getBigNumber } from "./utils/index";
 import * as log4js from "log4js";
+import { getGasPriceFromPolyscan } from "./utils/polyscanAPI";
 
 const devLogger = log4js.getLogger("develop");
 
@@ -56,9 +63,15 @@ export const flashloan = async (
     secondRoutes: secondRoutes,
   };
 
-  devLogger.debug(`flashloan.flashloan: about to flashloan...`);
+  let theGasPrice = gasPrice;
+  if (apiGetGasPrice) {
+    theGasPrice = await getGasPriceFromPolyscan();
+  }
+  devLogger.debug(
+    `flashloan.flashloan: about to flashloan...; theGasPrice:${theGasPrice};`
+  );
   return Flashloan.connect(signer).dodoFlashLoan(params, {
     gasLimit: gasLimit,
-    gasPrice: ethers.utils.parseUnits(`${gasPrice}`, "gwei"),
+    gasPrice: ethers.utils.parseUnits(`${theGasPrice}`, "gwei"),
   });
 };

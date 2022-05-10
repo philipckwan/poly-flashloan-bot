@@ -11,6 +11,7 @@ import {
   diffAmount,
   explorerURL,
   gasLimit,
+  apiGetGasPrice,
   gasPrice,
 } from "./config";
 import { flashloan } from "./flashloan";
@@ -64,7 +65,7 @@ const init = () => {
 export const main = async () => {
   init();
   devLogger.debug(
-    `poly-flashloan-bot.index.main: v1.7; process.env.LOGGER_FILE_PREFIX:${process.env.LOGGER_FILE_PREFIX};`
+    `poly-flashloan-bot.index.main: v1.8; process.env.LOGGER_FILE_PREFIX:${process.env.LOGGER_FILE_PREFIX}; apiGetGasPrice:${apiGetGasPrice};`
   );
   devLogger.debug(`__gasPrice:${gasPrice};`);
 
@@ -118,7 +119,6 @@ export const main = async () => {
             await checkArbitrage(baseToken, tradingToken, updateRow);
 
           renderTables(p, pp);
-
           devLogger.debug(
             `index.main: [${baseToken.symbol}] -> [${tradingToken.symbol}], isProfitable:${isProfitable};`
           );
