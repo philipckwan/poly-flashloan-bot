@@ -64,7 +64,7 @@ const init = () => {
 export const main = async () => {
   init();
   devLogger.debug(
-    `poly-flashloan-bot.index.main: v1.6; process.env.LOGGER_FILE_PREFIX:${process.env.LOGGER_FILE_PREFIX};`
+    `poly-flashloan-bot.index.main: v1.7; process.env.LOGGER_FILE_PREFIX:${process.env.LOGGER_FILE_PREFIX};`
   );
   devLogger.debug(`__gasPrice:${gasPrice};`);
 
@@ -91,7 +91,7 @@ export const main = async () => {
   baseTokens.forEach(async (baseToken) => {
     tradingTokens.forEach(async (tradingToken) => {
       // prevent swapping the same pair
-      if (baseToken.address > tradingToken.address) {
+      if (baseToken.address != tradingToken.address) {
         const i = idx;
 
         // await delay(interval / (baseTokens.length * tradingTokens.length) * i)
