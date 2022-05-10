@@ -65,7 +65,7 @@ const init = () => {
 export const main = async () => {
   init();
   devLogger.debug(
-    `poly-flashloan-bot.index.main: v1.8; process.env.LOGGER_FILE_PREFIX:${process.env.LOGGER_FILE_PREFIX}; apiGetGasPrice:${apiGetGasPrice};`
+    `poly-flashloan-bot.index.main: v1.9; process.env.LOGGER_FILE_PREFIX:${process.env.LOGGER_FILE_PREFIX}; apiGetGasPrice:${apiGetGasPrice};`
   );
   devLogger.debug(`__gasPrice:${gasPrice};`);
 
@@ -122,6 +122,7 @@ export const main = async () => {
           devLogger.debug(
             `index.main: [${baseToken.symbol}] -> [${tradingToken.symbol}], isProfitable:${isProfitable};`
           );
+
           if (isProfitable && !isFlashLoaning) {
             if (firstProtocols && secondProtocols) {
               devLogger.debug(

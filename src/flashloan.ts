@@ -6,6 +6,7 @@ import {
   gasLimit,
   gasPrice,
   apiGetGasPrice,
+  gasPriceLimit,
 } from "./config";
 import { IToken, dodoV2Pool } from "./constants/addresses";
 import { IFlashloanRoute, IParams } from "./interfaces/main";
@@ -66,6 +67,10 @@ export const flashloan = async (
   let theGasPrice = gasPrice;
   if (apiGetGasPrice) {
     theGasPrice = await getGasPriceFromPolyscan();
+    theGasPrice = theGasPrice * 2;
+  }
+  if (theGasPrice > gasPriceLimit) {
+    theGasPrice = gasPriceLimit;
   }
   devLogger.debug(
     `flashloan.flashloan: about to flashloan...; theGasPrice:${theGasPrice};`

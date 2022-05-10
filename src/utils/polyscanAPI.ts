@@ -13,6 +13,8 @@ export async function getGasPriceFromPolyscan(): Promise<number> {
   gasPrice = resultData.data.result.FastGasPrice;
 
   //const safeGasPrice = resultData1.data.protocols;
-  devLogger.debug(`polyscanAPI.getGasPriceFromPolyscan: 2.0;`);
+  devLogger.debug(
+    `polyscanAPI.getGasPriceFromPolyscan: 2.0; FastGasPrice:${gasPrice}`
+  );
   return gasPrice;
 }
