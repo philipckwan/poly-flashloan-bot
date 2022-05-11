@@ -61,3 +61,22 @@ export const findPool = (pool: string) => {
 export const findRouterFromProtocol = (protocol: number) => {
   return uniswapRouter[Object.keys(uniswapRouter)[protocol]];
 };
+
+export const formatDate = (d: number) => {
+  let aDate = new Date(d);
+  let month = aDate.getMonth() + 1;
+  let date = aDate.getDate();
+  let hour = aDate.getHours();
+  let minute = aDate.getMinutes();
+  let second = aDate.getSeconds();
+  let mSec = aDate.getMilliseconds();
+  let testVal = process.env.TEST_KEY;
+  //clog.debug(`utility.formatDate: testVal:${testVal};`);
+  return `${date.toString().padStart(2, "0")}/${month
+    .toString()
+    .padStart(2, "0")}@${hour.toString().padStart(2, "0")}:${minute
+    .toString()
+    .padStart(2, "0")}:${second.toString().padStart(2, "0")}:${mSec
+    .toString()
+    .padStart(3, "0")}`;
+};

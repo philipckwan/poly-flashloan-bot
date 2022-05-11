@@ -2,12 +2,13 @@ import { ethers } from "ethers";
 import { chainId, diffAmount, loanAmount } from "../../config";
 import { IRoute } from "../../interfaces/main";
 import { ERC20Token, IToken } from "../../constants/addresses";
-import { replaceTokenAddress } from "../../utils";
+import { replaceTokenAddress, formatDate } from "../../utils";
 import { IProtocol } from "../../interfaces/inch";
 import { sendRequest } from "../../utils/request";
-import { chalkDifference, chalkPercentage } from "../../utils/chalk";
 import { get1inchQuoteCallUrl } from "./url";
+import * as log4js from "log4js";
 
+const devLogger = log4js.getLogger("develop");
 /**
  * Will check if there's an arbitrage opportunity using the 1inch API
  * @param fromToken token symbol you're swapping from
@@ -17,18 +18,9 @@ import { get1inchQuoteCallUrl } from "./url";
  */
 export async function checkArbitrage(
   fromToken: IToken,
-  toToken: IToken,
-  updateRow: Function
+  toToken: IToken
 ): Promise<[boolean, IProtocol[][][] | null, IProtocol[][][] | null, string?]> {
-  // Reset the row to default values.
-  updateRow(
-    {
-      log: ``,
-    },
-    {
-      color: "white",
-    }
-  );
+  let startTime = Date.now();
 
   const fromTokenDecimal = fromToken.decimals;
 
@@ -48,28 +40,8 @@ export async function checkArbitrage(
     amount
   );
 
-  updateRow({
-    log: `Getting quote for ${fromToken.symbol} → ${toToken.symbol}…`,
-  });
-
   const resultData1 = await sendRequest(firstCallURL);
   if (!resultData1.data) {
-    updateRow(
-      {
-        fromToken: fromToken.symbol.padEnd(6),
-        toToken: toToken.symbol.padEnd(6),
-
-        fromAmount: Number(ethers.utils.formatUnits(amount, fromTokenDecimal))
-          .toFixed(2)
-          .padStart(7),
-
-        log: `${resultData1.errorMessage}`,
-      },
-      {
-        color: "red",
-      }
-    );
-
     return [false, null, null];
   }
 
@@ -82,33 +54,8 @@ export async function checkArbitrage(
     returnAmount
   );
 
-  updateRow({
-    log: `Getting quote for ${toToken.symbol} → ${fromToken.symbol}…`,
-  });
-
   const resultData2 = await sendRequest(secondCallURL);
   if (!resultData2.data) {
-    updateRow(
-      {
-        fromToken: resultData1.data.fromToken.symbol.padEnd(6),
-        toToken: toToken.symbol.padEnd(6),
-
-        fromAmount: Number(
-          ethers.utils.formatUnits(
-            resultData1.data.fromTokenAmount,
-            resultData1.data.fromToken.decimals
-          )
-        )
-          .toFixed(2)
-          .padStart(7),
-
-        log: resultData2.errorMessage,
-      },
-      {
-        color: "red",
-      }
-    );
-
     return [false, null, null];
   }
   const secondProtocols = resultData2.data.protocols;
@@ -132,23 +79,19 @@ export async function checkArbitrage(
   const difference = Number(toTokenAmount) - Number(fromTokenAmount);
   const percentage = (difference / Number(fromTokenAmount)) * 100;
 
-  updateRow(
-    {
-      fromToken: resultData1.data.fromToken.symbol.padEnd(6),
-      toToken: resultData1.data.toToken.symbol.padEnd(6),
-
-      fromAmount: fromTokenAmount.toFixed(2).padStart(7),
-      toAmount: toTokenAmount.toFixed(2).padStart(7),
-
-      difference: chalkDifference(difference).padStart(7),
-      percentage: chalkPercentage(percentage).padStart(5),
-
-      log: "",
-    },
-    {
-      color: isProfitable ?? "green",
-    }
-  );
+  if (isProfitable) {
+    let endTime = Date.now();
+    let timeDiff = (endTime - startTime) / 1000;
+    devLogger.debug(
+      `1inch.index.checkArbitrage: [${fromToken.symbol}]->[${
+        toToken.symbol
+      }]; isProfitable:${isProfitable}; amount difference:${difference}; percentage:${percentage.toFixed(
+        3
+      )}; start:${formatDate(startTime)}; end:${formatDate(
+        endTime
+      )}; duration:${timeDiff.toFixed(3)};`
+    );
+  }
 
   // isProfitable &&
   //   console.warn(
