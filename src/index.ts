@@ -157,10 +157,9 @@ export const main = async () => {
               const difference = Number(stDifference);
               const percentage = (difference / Number(loanAmount)) * 100;
 
-              const startTime = Date.now();
               try {
                 devLogger.debug(
-                  `index.main: about to flashloan for [${baseToken.symbol}] -> [${tradingToken.symbol}]`
+                  `index.main: [${baseToken.symbol}] -> [${tradingToken.symbol}] about to flashloan`
                 );
                 const tx = await flashloan(
                   baseToken,
@@ -168,7 +167,7 @@ export const main = async () => {
                   secondRoutes
                 );
                 devLogger.debug(
-                  `index.main: done flashloan for [${baseToken.symbol}] -> [${tradingToken.symbol}]; tx:${tx.hash};`
+                  `index.main: [${baseToken.symbol}] -> [${tradingToken.symbol}] done flashloan; tx:${tx.hash}; difference:${difference}; percentage:${percentage};`
                 );
                 logger.info("flashloan executed", tx.hash);
                 logger.info(`Explorer URL: ${explorerURL}/tx/${tx.hash}`);
