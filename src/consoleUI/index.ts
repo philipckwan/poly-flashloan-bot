@@ -1,36 +1,34 @@
 import { Table } from "console-table-printer";
-import { baseTokens, tradingTokens } from "../config";
+import { swapPairList } from "../config";
 const readline = require("readline");
 
 export const initPriceTable = (p: Table, idx: number) => {
-  baseTokens.forEach(async (baseToken) => {
-    tradingTokens.forEach(async (tradingToken) => {
-      if (baseToken.address != tradingToken.address) {
-        p.addRow({
-          index: idx,
+  swapPairList.forEach(async (aSwapPair) => {
+    let baseToken = aSwapPair.fromToken;
+    let tradingToken = aSwapPair.toToken;
+    if (baseToken.address != tradingToken.address) {
+      p.addRow({
+        index: idx,
 
-          fromToken: (baseToken === tradingToken
-            ? ""
-            : baseToken.symbol
-          ).padEnd(6),
-          toToken: (baseToken === tradingToken
-            ? ""
-            : tradingToken.symbol
-          ).padEnd(6),
+        fromToken: (baseToken === tradingToken ? "" : baseToken.symbol).padEnd(
+          6
+        ),
+        toToken: (baseToken === tradingToken ? "" : tradingToken.symbol).padEnd(
+          6
+        ),
 
-          fromAmount: "".padStart(7),
-          toAmount: "".padStart(7),
+        fromAmount: "".padStart(7),
+        toAmount: "".padStart(7),
 
-          difference: "".padStart(7),
-          percentage: "".padStart(5),
+        difference: "".padStart(7),
+        percentage: "".padStart(5),
 
-          time: "".padStart(6),
-          timestamp: "".padStart(24),
-        });
+        time: "".padStart(6),
+        timestamp: "".padStart(24),
+      });
 
-        idx++;
-      }
-    });
+      idx++;
+    }
   });
 };
 

@@ -1,11 +1,13 @@
-import { ERC20Token } from "./constants/addresses";
+import { IToken, ERC20Token } from "./constants/addresses";
 
 export const renderInterval = 1 * 1000;
 
 // interval of price check (ms)
 export const interval = 4 * 1000;
 
-export const loanAmount = 10000;
+export const loanAmount = process.env.LOAN_AMOUNT_USDX
+  ? parseInt(process.env.LOAN_AMOUNT_USDX)
+  : 11000; // gwei
 export const diffAmount = 10; // Not enough amount to return loan
 
 //export const chainId = 1;// Ethereum
@@ -19,22 +21,24 @@ export const explorerURL = "https://polygonscan.com";
  * baseToken -> tradingToken -> baseToken (ex: DAI -> WETH -> DAI)
  * profits are sent in baseToken if a transaction is successful.
  */
-
-export const baseTokens = [
-  // ERC20Token.DAI,
-  // ERC20Token.WETH,
-  ERC20Token.USDC,
-  ERC20Token.USDT,
-  // ERC20Token.WMATIC,
-];
-
-export const tradingTokens = [
-  ERC20Token.DAI,
-  ERC20Token.WETH,
-  ERC20Token.USDC,
-  ERC20Token.USDT,
-  ERC20Token.WMATIC,
-];
+export interface swapPair {
+  fromToken: IToken;
+  toToken: IToken;
+}
+export var swapPairList: swapPair[] = [];
+//export var baseTokens:IToken[] = [];
+//export var tradingTokens:IToken[] = [];
+let swapPairSplitList = process.env.SWAP_PAIR_LIST
+  ? process.env.SWAP_PAIR_LIST.split(",")
+  : [];
+for (let aSwapPairStr of swapPairSplitList) {
+  let fromTokenStr = aSwapPairStr.split(":")[0];
+  let toTokenStr = aSwapPairStr.split(":")[1];
+  let fromToken = ERC20Token[fromTokenStr];
+  let toToken = ERC20Token[toTokenStr];
+  let newSwapPair: swapPair = { fromToken: fromToken, toToken: toToken };
+  swapPairList.push(newSwapPair);
+}
 
 /**
  * @type {string} public flashloan contract address
