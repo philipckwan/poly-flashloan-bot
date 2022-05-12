@@ -64,7 +64,7 @@ export const main = async () => {
 
   console.clear();
 
-  let msg = `poly-flashloan-bot.index.main: v1.12; process.env.LOGGER_FILE_PREFIX:${process.env.LOGGER_FILE_PREFIX}; apiGetGasPrice:${apiGetGasPrice};`;
+  let msg = `poly-flashloan-bot.index.main: v1.13; process.env.LOGGER_FILE_PREFIX:${process.env.LOGGER_FILE_PREFIX}; apiGetGasPrice:${apiGetGasPrice};`;
   devLogger.debug(msg);
   console.log(msg);
   msg = `__gasPrice:${gasPrice};loanAmount:${loanAmount};gasPriceMultiplier:${gasPriceMultiplier};gasPriceLimit:${gasPriceLimit};`;
@@ -92,7 +92,7 @@ export const main = async () => {
           await checkArbitrage(baseToken, tradingToken);
 
         devLogger.debug(
-          `index.main: [${baseToken.symbol}-${tradingToken.symbol}], isProfitable:${isProfitable};`
+          `index.main: [${baseToken.symbol}-${tradingToken.symbol}], isPft:${isProfitable};`
         );
 
         if (isProfitable && !isFlashLoaning && !isCheckingOpportunity) {
@@ -136,9 +136,9 @@ export const main = async () => {
             devLogger.debug(
               `index.main: [${baseToken.symbol}-${
                 tradingToken.symbol
-              }#${idOpCheck}]; isOpportunity:${isOpportunity}; bnExpectedAmountOut:${bnExpectedAmountOut}; start:${formatDate(
-                startTime
-              )}; end:${formatDate(endTime)}; duration:${timeDiff.toFixed(3)};`
+              }#${idOpCheck}]; isOpp:${isOpportunity}; bnExpectedAmountOut:${bnExpectedAmountOut}; oppDur:${timeDiff.toFixed(
+                3
+              )};T:[${formatDate(startTime)}-${formatDate(endTime)}];`
             );
 
             if (isOpportunity) {
@@ -160,7 +160,11 @@ export const main = async () => {
 
               try {
                 devLogger.debug(
-                  `index.main: [${baseToken.symbol}-${tradingToken.symbol}#${idOpCheck}] about to flashloan`
+                  `index.main: [${baseToken.symbol}-${
+                    tradingToken.symbol
+                  }#${idOpCheck}] about to flashloan; diff:${difference}; pct:${percentage.toFixed(
+                    3
+                  )};`
                 );
                 const tx = await flashloan(
                   baseToken,
@@ -169,7 +173,7 @@ export const main = async () => {
                   idOpCheck
                 );
                 devLogger.debug(
-                  `index.main: [${baseToken.symbol}-${tradingToken.symbol}#${idOpCheck}] done flashloan; tx:${tx.hash}; difference:${difference}; percentage:${percentage};`
+                  `index.main: [${baseToken.symbol}-${tradingToken.symbol}#${idOpCheck}] done flashloan; tx:${tx.hash};`
                 );
                 logger.info("flashloan executed", tx.hash);
                 logger.info(`Explorer URL: ${explorerURL}/tx/${tx.hash}`);

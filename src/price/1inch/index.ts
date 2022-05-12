@@ -85,11 +85,11 @@ export async function checkArbitrage(
     devLogger.debug(
       `1inch.index.checkArbitrage: [${fromToken.symbol}]->[${
         toToken.symbol
-      }]; isProfitable:${isProfitable}; amount difference:${difference}; percentage:${percentage.toFixed(
+      }]; isPft:${isProfitable}; amtDiff:${difference}; pct:${percentage.toFixed(
         3
-      )}; start:${formatDate(startTime)}; end:${formatDate(
-        endTime
-      )}; duration:${timeDiff.toFixed(3)};`
+      )}; pftDur:${timeDiff.toFixed(3)};T:[${formatDate(
+        startTime
+      )}-${formatDate(endTime)}];`
     );
     devLogger.debug(`_1st_data_:${JSON.stringify(resultData1.data)};`);
     devLogger.debug(`_2nd_data_:${JSON.stringify(resultData2.data)};`);
