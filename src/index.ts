@@ -5,13 +5,14 @@ import { checkArbitrage } from "./price/1inch";
 import {
   swapPairList,
   interval,
-  renderInterval,
   loanAmount,
   diffAmount,
   explorerURL,
   gasLimit,
   apiGetGasPrice,
   gasPrice,
+  gasPriceLimit,
+  gasPriceMultiplier,
 } from "./config";
 import { flashloan } from "./flashloan";
 import { expectAmountOut } from "./expect";
@@ -63,10 +64,10 @@ export const main = async () => {
 
   console.clear();
 
-  let msg = `poly-flashloan-bot.index.main: v1.11; process.env.LOGGER_FILE_PREFIX:${process.env.LOGGER_FILE_PREFIX}; apiGetGasPrice:${apiGetGasPrice};`;
+  let msg = `poly-flashloan-bot.index.main: v1.12; process.env.LOGGER_FILE_PREFIX:${process.env.LOGGER_FILE_PREFIX}; apiGetGasPrice:${apiGetGasPrice};`;
   devLogger.debug(msg);
   console.log(msg);
-  msg = `__gasPrice:${gasPrice};loanAmount:${loanAmount};`;
+  msg = `__gasPrice:${gasPrice};loanAmount:${loanAmount};gasPriceMultiplier:${gasPriceMultiplier};gasPriceLimit:${gasPriceLimit};`;
   devLogger.debug(msg);
   console.log(msg);
 
@@ -82,25 +83,25 @@ export const main = async () => {
       const func = async () => {
         while (isCheckingOpportunity) {
           devLogger.debug(
-            `index.main: [${baseToken.symbol}] -> [${tradingToken.symbol}], skipping isProfit checking until isCheckingOpportunity returns false...`
+            `index.main: [${baseToken.symbol}-${tradingToken.symbol}], skipping isProfit checking until isCheckingOpportunity returns false...`
           );
           return;
         }
-
-        const startTime = Date.now();
 
         const [isProfitable, firstProtocols, secondProtocols] =
           await checkArbitrage(baseToken, tradingToken);
 
         devLogger.debug(
-          `index.main: [${baseToken.symbol}] -> [${tradingToken.symbol}], isProfitable:${isProfitable};`
+          `index.main: [${baseToken.symbol}-${tradingToken.symbol}], isProfitable:${isProfitable};`
         );
 
         if (isProfitable && !isFlashLoaning && !isCheckingOpportunity) {
           if (firstProtocols && secondProtocols) {
             isCheckingOpportunity = true;
+            // generate a random number to be used as an identifier
+            let idOpCheck = Math.floor(Math.random() * 10000);
             devLogger.debug(
-              `index.main: [${baseToken.symbol}] -> [${tradingToken.symbol}], will check for isOpportunity;`
+              `index.main: [${baseToken.symbol}-${tradingToken.symbol}#${idOpCheck}], will check for isOpportunity;`
             );
             const firstRoutes = createRoutes(firstProtocols);
             const secondRoutes = createRoutes(secondProtocols);
@@ -133,9 +134,9 @@ export const main = async () => {
               getBigNumber(diffAmount, baseToken.decimals)
             );
             devLogger.debug(
-              `index.main: [${baseToken.symbol}] -> [${
+              `index.main: [${baseToken.symbol}-${
                 tradingToken.symbol
-              }]; isOpportunity:${isOpportunity}; bnExpectedAmountOut:${bnExpectedAmountOut}; start:${formatDate(
+              }#${idOpCheck}]; isOpportunity:${isOpportunity}; bnExpectedAmountOut:${bnExpectedAmountOut}; start:${formatDate(
                 startTime
               )}; end:${formatDate(endTime)}; duration:${timeDiff.toFixed(3)};`
             );
@@ -159,19 +160,23 @@ export const main = async () => {
 
               try {
                 devLogger.debug(
-                  `index.main: [${baseToken.symbol}] -> [${tradingToken.symbol}] about to flashloan`
+                  `index.main: [${baseToken.symbol}-${tradingToken.symbol}#${idOpCheck}] about to flashloan`
                 );
                 const tx = await flashloan(
                   baseToken,
                   firstRoutes,
-                  secondRoutes
+                  secondRoutes,
+                  idOpCheck
                 );
                 devLogger.debug(
-                  `index.main: [${baseToken.symbol}] -> [${tradingToken.symbol}] done flashloan; tx:${tx.hash}; difference:${difference}; percentage:${percentage};`
+                  `index.main: [${baseToken.symbol}-${tradingToken.symbol}#${idOpCheck}] done flashloan; tx:${tx.hash}; difference:${difference}; percentage:${percentage};`
                 );
                 logger.info("flashloan executed", tx.hash);
                 logger.info(`Explorer URL: ${explorerURL}/tx/${tx.hash}`);
               } catch (e) {
+                devLogger.error(
+                  `index.main: ERROR - in flashloan execution; [${baseToken.symbol}-${tradingToken.symbol}#${idOpCheck}];`
+                );
                 errReport.error(e);
                 errReport.error({
                   gasLimit,

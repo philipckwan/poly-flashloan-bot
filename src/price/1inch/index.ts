@@ -91,6 +91,8 @@ export async function checkArbitrage(
         endTime
       )}; duration:${timeDiff.toFixed(3)};`
     );
+    devLogger.debug(`_1st_data_:${JSON.stringify(resultData1.data)};`);
+    devLogger.debug(`_2nd_data_:${JSON.stringify(resultData2.data)};`);
   }
 
   // isProfitable &&

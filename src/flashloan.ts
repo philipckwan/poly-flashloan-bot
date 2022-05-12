@@ -7,6 +7,7 @@ import {
   gasPrice,
   apiGetGasPrice,
   gasPriceLimit,
+  gasPriceMultiplier,
 } from "./config";
 import { IToken, dodoV2Pool } from "./constants/addresses";
 import { IFlashloanRoute, IParams } from "./interfaces/main";
@@ -53,7 +54,8 @@ const getLendingPool = (borrowingToken: IToken) => {
 export const flashloan = async (
   tokenIn: IToken,
   firstRoutes: IFlashloanRoute[],
-  secondRoutes: IFlashloanRoute[]
+  secondRoutes: IFlashloanRoute[],
+  idOpCheck: number
 ) => {
   let params: IParams;
 
@@ -64,19 +66,22 @@ export const flashloan = async (
     secondRoutes: secondRoutes,
   };
 
-  let theGasPrice = gasPrice;
+  let executionGasPrice = gasPrice;
   if (apiGetGasPrice) {
-    theGasPrice = await getGasPriceFromPolyscan();
-    theGasPrice = theGasPrice * 2;
+    let apiGetGasPrice = await getGasPriceFromPolyscan();
+    devLogger.debug(
+      `flashloan.flashloan: apiGetGasPrice:${apiGetGasPrice}; idOpCheck:${idOpCheck};`
+    );
+    executionGasPrice = apiGetGasPrice * gasPriceMultiplier;
   }
-  if (theGasPrice > gasPriceLimit) {
-    theGasPrice = gasPriceLimit;
+  if (executionGasPrice > gasPriceLimit) {
+    executionGasPrice = gasPriceLimit;
   }
   devLogger.debug(
-    `flashloan.flashloan: about to flashloan...; theGasPrice:${theGasPrice};`
+    `flashloan.flashloan: about to flashloan...; executionGasPrice:${executionGasPrice}; idOpCheck:${idOpCheck}`
   );
   return Flashloan.connect(signer).dodoFlashLoan(params, {
     gasLimit: gasLimit,
-    gasPrice: ethers.utils.parseUnits(`${theGasPrice}`, "gwei"),
+    gasPrice: ethers.utils.parseUnits(`${executionGasPrice}`, "gwei"),
   });
 };

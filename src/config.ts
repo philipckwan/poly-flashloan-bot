@@ -57,13 +57,18 @@ export const protocols =
   "POLYGON_SUSHISWAP,POLYGON_QUICKSWAP,POLYGON_APESWAP,POLYGON_JETSWAP,POLYGON_WAULTSWAP,POLYGON_UNISWAP_V3";
 
 export const gasLimit = 15000000;
-export const gasPriceLimit = 1000;
 export const apiGetGasPrice: boolean = process.env.API_GET_GAS_PRICE
   ? process.env.API_GET_GAS_PRICE === "true"
   : false;
 export const gasPrice = process.env.GAS_PRICE
   ? parseInt(process.env.GAS_PRICE)
   : 110; // gwei
+export const gasPriceMultiplier = process.env.GAS_PRICE_MULTIPLIER
+  ? parseInt(process.env.GAS_PRICE_MULTIPLIER)
+  : 1;
+export const gasPriceLimit = process.env.GAS_PRICE_LIMIT
+  ? parseInt(process.env.GAS_PRICE_LIMIT)
+  : 1000;
 
 export const routeParts = [
   [10000],
