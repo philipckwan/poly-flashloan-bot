@@ -64,10 +64,14 @@ export const main = async () => {
 
   console.clear();
 
-  let msg = `poly-flashloan-bot.index.main: v1.13; process.env.LOGGER_FILE_PREFIX:${process.env.LOGGER_FILE_PREFIX}; apiGetGasPrice:${apiGetGasPrice};`;
+  let remainingFlashloanTries = process.env.MAX_NUM_SUCCESSFUL_FLASHLOAN
+    ? parseInt(process.env.MAX_NUM_SUCCESSFUL_FLASHLOAN)
+    : 0;
+
+  let msg = `poly-flashloan-bot.index.main: v1.14; process.env.LOGGER_FILE_PREFIX:${process.env.LOGGER_FILE_PREFIX}; apiGetGasPrice:${apiGetGasPrice};`;
   devLogger.debug(msg);
   console.log(msg);
-  msg = `__gasPrice:${gasPrice};loanAmount:${loanAmount};gasPriceMultiplier:${gasPriceMultiplier};gasPriceLimit:${gasPriceLimit};`;
+  msg = `__gasPrice:${gasPrice};loanAmount:${loanAmount};gasPriceMultiplier:${gasPriceMultiplier};gasPriceLimit:${gasPriceLimit};remainingFlashloanTries:${remainingFlashloanTries};`;
   devLogger.debug(msg);
   console.log(msg);
 
@@ -142,6 +146,13 @@ export const main = async () => {
             );
 
             if (isOpportunity) {
+              if (remainingFlashloanTries < 1) {
+                devLogger.debug(
+                  `index.main: flashloan will not be executed due to remainingFlashloanTries used up; remainingFlashloanTries:${remainingFlashloanTries};`
+                );
+                isCheckingOpportunity = false;
+                return;
+              }
               isFlashLoaning = true;
               const stDifference = Number(
                 ethers.utils.formatUnits(
@@ -172,8 +183,9 @@ export const main = async () => {
                   secondRoutes,
                   idOpCheck
                 );
+                remainingFlashloanTries--;
                 devLogger.debug(
-                  `index.main: [${baseToken.symbol}-${tradingToken.symbol}#${idOpCheck}] done flashloan; tx:${tx.hash};`
+                  `index.main: [${baseToken.symbol}-${tradingToken.symbol}#${idOpCheck}] done flashloan; tx:${tx.hash};remainingFlashloanTries:${remainingFlashloanTries}`
                 );
                 logger.info("flashloan executed", tx.hash);
                 logger.info(`Explorer URL: ${explorerURL}/tx/${tx.hash}`);
