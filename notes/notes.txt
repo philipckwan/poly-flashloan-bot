@@ -1,0 +1,13 @@
+20220512:
+DONE-remove polyscan get gas price logging
+-investigate seems redundane threads sprawn
+DONE-print routing info after isProfit=true
+DONE-add a devLogger log when flashloan error
+DONE-make gasPriceLimit and gasPriceMultiplier configurable
+-see if need to have a separate log file to track the logs after isProfit and/or isOpportunity
+DONE-do a grep of this log directory on "isOpportunity:true" and "theGasPrice"
+DONE-add an identifier of each opportunity check to make it easier to cross reference in the logs
+DONE-add a maxFlashloanTimes to limit the number of successful flashloans within a period
+-gasPriceMultiplier needs to be float not int
+-make the API get gasprice from polyscan take api key from config
+-as suggested by yuchi, try API get gasprice from ethers
