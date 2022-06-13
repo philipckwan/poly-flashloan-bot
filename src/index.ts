@@ -7,6 +7,7 @@ import {
   gasLimit,
   tradingRoutes,
   diffPercentage,
+  flashloanAddress,
 } from "./config";
 import { flashloan } from "./flashloan";
 import { checkIfProfitable, getBigNumber } from "./utils";
@@ -33,6 +34,8 @@ const errReport = log4js.getLogger("error");
 
 export const main = async () => {
   let isFlashLoaning = false;
+  let msg = `poly-flashloan-bot.index.main: v3.1; flashloanAddress:${flashloanAddress};`;
+  console.log(msg);
   tradingRoutes.forEach(async (trade) => {
     const baseToken = trade.path[0];
 

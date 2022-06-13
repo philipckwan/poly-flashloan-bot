@@ -17,7 +17,7 @@ export const explorerURL = "https://polygonscan.com";
 
 export const tradingRoutes: ITrade[] = [
   {
-    path: [ERC20Token.USDC, ERC20Token.DAI, ERC20Token.USDC],
+    path: [ERC20Token.USDC, ERC20Token.WMATIC, ERC20Token.USDC],
     protocols: [2, 0],
     amountIn: getBigNumber(20000, ERC20Token.USDC.decimals),
   },
@@ -29,7 +29,7 @@ export const tradingRoutes: ITrade[] = [
  * if you have deployed your own contract, you can use it instead of the default one
  */
 export const flashloanAddress: string =
-  "0x33d8d437796bd43bdccc6740c585f4a15d1070b7";
+  "0x441928e2a19ea7be718e41e0b7979d4d3abed57c";
 
 /**
  * The bot can trade on UniswapV2 fork dexes(ex. SushiSwap) and UniswapV3
