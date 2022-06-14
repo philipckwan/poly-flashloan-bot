@@ -5,6 +5,8 @@ import { IToken, dodoV2Pool } from "./constants/addresses";
 import { IParams } from "./interfaces/main";
 import { ITrade } from "./interfaces/trade";
 import { passRoutes } from "./routes";
+import * as log4js from "log4js";
+const devLogger = log4js.getLogger("develop");
 
 const maticProvider = new ethers.providers.JsonRpcProvider(
   process.env.ALCHEMY_POLYGON_RPC_URL
@@ -42,8 +44,17 @@ const getLendingPool = (borrowingToken: IToken) => {
 export const flashloan = async (trade: ITrade) => {
   let params: IParams;
   const tokenIn = trade.path[0];
-  const gasPrice = await maticProvider.getGasPrice();
-  const extraGas = ethers.utils.parseUnits("100", "gwei");
+  const bnGasPrice = await maticProvider.getGasPrice();
+  let gasPrice = ethers.utils.formatUnits(bnGasPrice, "gwei");
+  devLogger.debug(
+    `flashloan.flashloan: gasPrice:${gasPrice}; bnGasPrice:${bnGasPrice};`
+  );
+  const bnExtraGas = ethers.utils.parseUnits("100", "gwei");
+  let bnNewGasPrice = bnGasPrice.add(bnExtraGas);
+  let newGasPrice = ethers.utils.formatUnits(bnNewGasPrice, "gwei");
+  devLogger.debug(
+    `flashloan.flashloan: newGasPrice:${newGasPrice}; bnNewGasPrice:${bnNewGasPrice};`
+  );
   params = {
     flashLoanPool: getLendingPool(tokenIn),
     loanAmount: trade.amountIn,
@@ -52,6 +63,6 @@ export const flashloan = async (trade: ITrade) => {
 
   return Flashloan.connect(signer).dodoFlashLoan(params, {
     gasLimit: gasLimit,
-    gasPrice: gasPrice.add(extraGas),
+    gasPrice: bnNewGasPrice,
   });
 };

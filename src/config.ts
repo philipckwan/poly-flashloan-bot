@@ -19,7 +19,7 @@ export const tradingRoutes: ITrade[] = [
   {
     path: [ERC20Token.USDC, ERC20Token.WMATIC, ERC20Token.USDC],
     protocols: [2, 0],
-    amountIn: getBigNumber(20000, ERC20Token.USDC.decimals),
+    amountIn: getBigNumber(10000, ERC20Token.USDC.decimals),
   },
 ];
 

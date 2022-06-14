@@ -1,0 +1,2 @@
+DONE v3.2-add new log file (dev)
+DONE v3.2-log gasprice fetched
