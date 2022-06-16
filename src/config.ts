@@ -37,3 +37,5 @@ export const flashloanAddress: string =
  */
 
 export const gasLimit = 15000000;
+
+export const gasPriceLimit = 1000;

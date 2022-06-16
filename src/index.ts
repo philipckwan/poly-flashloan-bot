@@ -37,7 +37,7 @@ const errReport = log4js.getLogger("error");
 
 export const main = async () => {
   let isFlashLoaning = false;
-  let msg = `poly-flashloan-bot.index.main: v3.2; flashloanAddress:${flashloanAddress};`;
+  let msg = `poly-flashloan-bot.index.main: v3.3; flashloanAddress:${flashloanAddress};`;
   console.log(msg);
   devLogger.debug(msg);
   tradingRoutes.forEach(async (trade) => {

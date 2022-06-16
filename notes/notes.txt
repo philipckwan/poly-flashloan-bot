@@ -1,2 +1,3 @@
 DONE v3.2-add new log file (dev)
 DONE v3.2-log gasprice fetched
+DONE(v3.3)-do not execute flashloan if gasPrice over the gasPriceLimit

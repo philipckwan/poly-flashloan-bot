@@ -1,6 +1,6 @@
 import { ethers } from "ethers";
 import * as FlashloanJson from "./abis/Flashloan.json";
-import { flashloanAddress, gasLimit } from "./config";
+import { flashloanAddress, gasLimit, gasPriceLimit } from "./config";
 import { IToken, dodoV2Pool } from "./constants/addresses";
 import { IParams } from "./interfaces/main";
 import { ITrade } from "./interfaces/trade";
@@ -51,10 +51,15 @@ export const flashloan = async (trade: ITrade) => {
   );
   const bnExtraGas = ethers.utils.parseUnits("100", "gwei");
   let bnNewGasPrice = bnGasPrice.add(bnExtraGas);
-  let newGasPrice = ethers.utils.formatUnits(bnNewGasPrice, "gwei");
+  let newGasPrice = Number(ethers.utils.formatUnits(bnNewGasPrice, "gwei"));
   devLogger.debug(
     `flashloan.flashloan: newGasPrice:${newGasPrice}; bnNewGasPrice:${bnNewGasPrice};`
   );
+  if (newGasPrice > gasPriceLimit) {
+    let msg = `flashloan.flashloan: gasPrice too high, will not execute flashloan;`;
+    devLogger.debug(msg);
+    throw new Error(msg);
+  }
   params = {
     flashLoanPool: getLendingPool(tokenIn),
     loanAmount: trade.amountIn,
