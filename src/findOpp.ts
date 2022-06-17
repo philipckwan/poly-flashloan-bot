@@ -2,11 +2,15 @@ import { ITrade } from "./interfaces/trade";
 import { getPriceOnUniV2 } from "./price/uniswap/v2/getPrice";
 import { getPriceOnUniV3 } from "./price/uniswap/v3/getPrice";
 import { findRouterFromProtocol, getBigNumber } from "./utils";
+import { BigNumber } from "ethers";
 import * as log4js from "log4js";
 
 const errReport = log4js.getLogger("error");
 
-export const findOpp = async (trade: ITrade) => {
+export const findOpp = async (
+  trade: ITrade
+): Promise<[BigNumber, BigNumber[]]> => {
+  let amountOuts: BigNumber[] = [];
   let amountOut = trade.amountIn;
   for (const [i, protocol] of trade.protocols.entries()) {
     switch (protocol) {
@@ -23,6 +27,8 @@ export const findOpp = async (trade: ITrade) => {
           logError(e);
           amountOut = getBigNumber(0);
           break;
+        } finally {
+          amountOuts.push(amountOut);
         }
       // uniswap v2
       default:
@@ -38,11 +44,13 @@ export const findOpp = async (trade: ITrade) => {
           logError(e);
           amountOut = getBigNumber(0);
           break;
+        } finally {
+          amountOuts.push(amountOut);
         }
     }
   }
 
-  return amountOut;
+  return [amountOut, amountOuts];
 };
 
 const logError = (e: any) => {

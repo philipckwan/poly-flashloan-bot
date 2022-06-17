@@ -1,3 +1,4 @@
 DONE v3.2-add new log file (dev)
 DONE v3.2-log gasprice fetched
 DONE(v3.3)-do not execute flashloan if gasPrice over the gasPriceLimit
+DONE(v3.4)-add swap info and rate of return when isOpp:true

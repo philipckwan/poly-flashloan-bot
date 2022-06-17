@@ -17,6 +17,7 @@ import { flashloanTable, priceTable } from "./consoleUI/table";
 // import { initPriceTable, renderTables } from "./consoleUI";
 import * as log4js from "log4js";
 import { findOpp } from "./findOpp";
+import { uniswapRouter } from "./constants/addresses";
 
 log4js.configure({
   appenders: {
@@ -37,7 +38,7 @@ const errReport = log4js.getLogger("error");
 
 export const main = async () => {
   let isFlashLoaning = false;
-  let msg = `poly-flashloan-bot.index.main: v3.3; flashloanAddress:${flashloanAddress};`;
+  let msg = `poly-flashloan-bot.index.main: v3.4; flashloanAddress:${flashloanAddress};`;
   console.log(msg);
   devLogger.debug(msg);
   tradingRoutes.forEach(async (trade) => {
@@ -46,18 +47,14 @@ export const main = async () => {
     const func = async () => {
       const bnLoanAmount = trade.amountIn;
       // estimate the token amount you get atfer swaps
-      let bnExpectedAmountOut = await findOpp(trade);
+      let [bnExpectedAmountOut, bnAmountOuts] = await findOpp(trade);
       const isProfitable = checkIfProfitable(
         bnLoanAmount,
         diffPercentage,
         bnExpectedAmountOut
       );
-      let expectedAmountOut = ethers.utils.formatUnits(
-        bnExpectedAmountOut,
-        trade.path[0].decimals
-      );
       devLogger.debug(
-        `index.main: isPft:${isProfitable}; bnExpectedAmountOut: ${bnExpectedAmountOut}; expectedAmountOut:${expectedAmountOut};`
+        `index.main: isOpp:${isProfitable}; bnExpectedAmountOut: ${bnExpectedAmountOut};`
       );
 
       if (isProfitable && !isFlashLoaning) {
@@ -90,6 +87,28 @@ export const main = async () => {
         } catch (e) {
           errReport.error(e);
         } finally {
+          let amountIn = Number(
+            ethers.utils.formatUnits(trade.amountIn, trade.path[0].decimals)
+          );
+          let amountOut0 = Number(
+            ethers.utils.formatUnits(bnAmountOuts[0], trade.path[1].decimals)
+          );
+          let rate0 = amountOut0 / amountIn;
+          let amountOut1 = Number(
+            ethers.utils.formatUnits(bnAmountOuts[1], trade.path[0].decimals)
+          );
+          let rate1 = amountOut1 / amountOut0;
+          let finalRate = rate0 * rate1;
+          let routerName0 = Object.keys(uniswapRouter)[trade.protocols[0]];
+          let routerName1 = Object.keys(uniswapRouter)[trade.protocols[1]];
+          let msg = `index.main: [${trade.path[0].symbol}-${
+            trade.path[1].symbol
+          }]:[${routerName0}:${rate0.toFixed(
+            5
+          )}]->[${routerName1}:${rate1.toFixed(5)}]; final%:${finalRate.toFixed(
+            4
+          )};`;
+          devLogger.debug(msg);
           isFlashLoaning = false;
         }
       }
