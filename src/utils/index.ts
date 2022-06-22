@@ -74,3 +74,13 @@ export const checkIfProfitable = (
     .lt(expectedAmountOut);
   return isOpportunity;
 };
+
+export const formatTime = (d: number) => {
+  let aDate = new Date(d);
+  let minute = aDate.getMinutes();
+  let second = aDate.getSeconds();
+  let mSec = aDate.getMilliseconds();
+  return `${minute.toString().padStart(2, "0")}:${second
+    .toString()
+    .padStart(2, "0")}:${mSec.toString().padStart(3, "0")}`;
+};

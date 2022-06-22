@@ -36,6 +36,6 @@ export const flashloanAddress: string =
  * For UniswapV2, you can trade between any token pair, but for UniswapV3, you have to check their pool fees and list them on src/price/uniswap/v3/fee.ts.
  */
 
-export const gasLimit = 15000000;
+export const gasLimit = 1200006;
 
 export const gasPriceLimit = 1000;

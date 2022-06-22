@@ -10,7 +10,7 @@ import {
   flashloanAddress,
 } from "./config";
 import { flashloan } from "./flashloan";
-import { checkIfProfitable, getBigNumber } from "./utils";
+import { checkIfProfitable, getBigNumber, formatTime } from "./utils";
 import { ethers } from "ethers";
 // import { chalkDifference, chalkPercentage, chalkTime } from "./utils/chalk";
 import { flashloanTable, priceTable } from "./consoleUI/table";
@@ -21,7 +21,11 @@ import { uniswapRouter } from "./constants/addresses";
 
 log4js.configure({
   appenders: {
-    dev: { type: "file", filename: "log/dev.log" },
+    dev: {
+      type: "file",
+      filename: "log/dev.log",
+      layout: { type: "pattern", pattern: "%d{MM/ddThh:mm:ss:SSS};%p;%m" },
+    },
     flashloan: { type: "file", filename: "log/flashloan.log" },
     error: { type: "file", filename: "log/error.log" },
   },
@@ -35,10 +39,14 @@ log4js.configure({
 const devLogger = log4js.getLogger("develop");
 const logger = log4js.getLogger("flashloan");
 const errReport = log4js.getLogger("error");
+let remainingFlashloanTries = process.env.MAX_NUM_SUCCESSFUL_FLASHLOAN
+  ? parseInt(process.env.MAX_NUM_SUCCESSFUL_FLASHLOAN)
+  : 0;
+//this.remainingFlashloanTries = process.env.MAX_NUM_SUCCESSFUL_FLASHLOAN ? parseInt(process.env.MAX_NUM_SUCCESSFUL_FLASHLOAN) : 0;
 
 export const main = async () => {
   let isFlashLoaning = false;
-  let msg = `poly-flashloan-bot.index.main: v3.5; flashloanAddress:${flashloanAddress};`;
+  let msg = `poly-flashloan-bot.index.main: v3.6; flashloanAddress:${flashloanAddress}; remainingFlashloanTries:${remainingFlashloanTries};`;
   console.log(msg);
   devLogger.debug(msg);
   tradingRoutes.forEach(async (trade) => {
@@ -46,18 +54,29 @@ export const main = async () => {
 
     const func = async () => {
       const bnLoanAmount = trade.amountIn;
-      // estimate the token amount you get atfer swaps
+      // estimate the token amount you get after swaps
+      let startTime = Date.now();
       let [bnExpectedAmountOut, bnAmountOuts] = await findOpp(trade);
+      let endTime = Date.now();
+      let timeDiff = (endTime - startTime) / 1000;
       const isProfitable = checkIfProfitable(
         bnLoanAmount,
         diffPercentage,
         bnExpectedAmountOut
       );
       devLogger.debug(
-        `index.main: isOpp:${isProfitable}; bnExpectedAmountOut: ${bnExpectedAmountOut};`
+        `index.main: isOpp:${isProfitable};bnExpectedAmountOut:${bnExpectedAmountOut};T:[${timeDiff}|${formatTime(
+          startTime
+        )}->${formatTime(endTime)}];`
       );
 
       if (isProfitable && !isFlashLoaning) {
+        if (remainingFlashloanTries <= 0) {
+          devLogger.debug(
+            `index.main: will not execute flashloan; remainingFlashloanTries:${remainingFlashloanTries};`
+          );
+          return;
+        }
         isFlashLoaning = true;
         try {
           const tx = await flashloan(trade);
@@ -84,6 +103,7 @@ export const main = async () => {
           logger.info("path", path, "protocols", trade.protocols);
           logger.info({ amount, difference, percentage });
           logger.info(`Explorer URL: ${explorerURL}/tx/${tx.hash}`);
+          remainingFlashloanTries--;
         } catch (e) {
           devLogger.error(`index.main: ERROR - flashloan execution error;`);
           errReport.error(e);
@@ -106,9 +126,9 @@ export const main = async () => {
             trade.path[1].symbol
           }]:[${routerName0}:${rate0.toFixed(
             5
-          )}]->[${routerName1}:${rate1.toFixed(5)}]; final%:${finalRate.toFixed(
+          )}]->[${routerName1}:${rate1.toFixed(5)}];final%:${finalRate.toFixed(
             4
-          )};`;
+          )};remainingFlashloanTries:${remainingFlashloanTries};`;
           devLogger.debug(msg);
           isFlashLoaning = false;
         }

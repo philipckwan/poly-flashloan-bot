@@ -3,3 +3,8 @@ DONE v3.2-log gasprice fetched
 DONE(v3.3)-do not execute flashloan if gasPrice over the gasPriceLimit
 DONE(v3.4)-add swap info and rate of return when isOpp:true
 DONE(v3.5)-some debug logging updates
+DONE(v3.6)-add time for isOpp detect (sec)
+DONE(v3.6)-change logger time format
+DONE(v3.6)-add a maxNumFlashloan to limit the number of flashloan tries
+DONE(v3.6)-sometimes the gasPrice might be too low, need to revise; solution is to change addExtraGas from 100 to 200
+DONE(v3.6)-lower the gasLimit than 15,000,000; to 1,200,006

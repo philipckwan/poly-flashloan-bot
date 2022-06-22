@@ -49,9 +49,10 @@ export const flashloan = async (trade: ITrade) => {
   devLogger.debug(
     `flashloan.flashloan: gasPrice:${gasPrice}; bnGasPrice:${bnGasPrice};`
   );
-  const bnExtraGas = ethers.utils.parseUnits("100", "gwei");
+  const bnExtraGas = ethers.utils.parseUnits("200", "gwei");
   let bnNewGasPrice = bnGasPrice.add(bnExtraGas);
   let newGasPrice = Number(ethers.utils.formatUnits(bnNewGasPrice, "gwei"));
+  newGasPrice = Math.round(newGasPrice * 100) / 100;
   devLogger.debug(
     `flashloan.flashloan: newGasPrice:${newGasPrice}; bnNewGasPrice:${bnNewGasPrice};`
   );
